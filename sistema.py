@@ -1,5 +1,5 @@
 import random
-MENU = '''
+MENU = f'''
 --------- Sistema bancário ---------
 
 [1] Depositar
@@ -9,26 +9,20 @@ MENU = '''
 
 '''
 saldo_bancario = random.uniform(0, 2000)
-print(saldo_bancario)
 quantidade_de_saques = 0
 MAXIMO_DE_SAQUES = 3
 valor_sacado = 0
 valor_depositado = 0
-def depositar():
-    global valor_depositado
-    global saldo_bancario
+def depositar(saldo_bancario, valor_depositado):
     deposito = input("Digite a quantia que deseja depositar: R$ ")
     valor_do_deposito = float(deposito)
-    print(f"Valor do depósito: {valor_do_deposito}")
     if valor_do_deposito < 0:
         print("Valor digitado não é possível ser depositado. \nTente novamente...")
-        depositar(saldo_bancario)
+        saldo_bancario, valor_depositado = depositar(saldo_bancario, valor_depositado)
 
     else:
         saldo_bancario += valor_do_deposito
-        print(f"Valor do saldo bancário: {saldo_bancario}")
         valor_depositado += valor_do_deposito
-        print(f"Valor do valor total depositado: {valor_depositado}")
         saldo_formatado = f"R$ {saldo_bancario:,.2f}"
         print(f"\nDepósito feito com sucesso! \nSaldo: {saldo_formatado}")
 
@@ -44,7 +38,7 @@ def depositar():
     while menu != 0 and menu != 1: 
         if menu == "1":
             print("Depositar novamente")
-            depositar()
+            saldo_bancario, valor_depositado = depositar(saldo_bancario, valor_depositado)
             break
         elif menu == "0":
             print("Voltando")
@@ -53,23 +47,17 @@ def depositar():
             print("Seleção de incorreta, tente novamente")
             break
     
-    return saldo_bancario
+    return saldo_bancario, valor_depositado
 
-def sacar():
-    global quantidade_de_saques
-    global valor_sacado
-    global saldo_bancario
+def sacar(saldo_bancario, valor_sacado, quantidade_de_saques):
     if quantidade_de_saques < MAXIMO_DE_SAQUES:
         saque = input("Digite a quantia que deseja sacar: ")
         valor_saque = float(saque)
-        print(f"Valor do saque: {valor_saque}")
         if valor_saque > saldo_bancario:
             print("Saque não efetuado. Valor do saque maior que o saldo bancário.")
         else:
             saldo_bancario -= valor_saque
-            print(f"Valor do saldo: {saldo_bancario}")
             valor_sacado += valor_saque
-            print(f"Valor total sacado: {valor_sacado}")
             saldo_formatado = f"R$ {saldo_bancario:,.2f}"
             print(f"\nSaque feito com sucesso! \nSaldo: {saldo_formatado}")
             quantidade_de_saques += 1    
@@ -89,7 +77,7 @@ def sacar():
     while menu != 0 and menu != 1: 
         if menu == "1":
             print("Sacar novamente")
-            sacar()
+            saldo_bancario, valor_sacado, quantidade_de_saques = sacar(saldo_bancario, valor_sacado, quantidade_de_saques)
             break
         elif menu == "0":
             print("Voltando")
@@ -98,13 +86,14 @@ def sacar():
             print("Seleção de incorreta, tente novamente")
             break
 
-    return saldo_bancario
+    return saldo_bancario, valor_sacado, quantidade_de_saques
 
-def extrato(valor_sacado, valor_depositado):
-    global saldo_bancario
+def extrato(saldo_bancario, valor_sacado, valor_depositado):
     print(f"Valor total depositado: {valor_depositado:,.2f}")
     print(f"\nValor total sacado: {valor_sacado:,.2f}")
-    print(f"Saldo bancário atual: {saldo_bancario:,.2f}")
+    print(f"\nSaldo bancário atual: {saldo_bancario:,.2f}")
+
+    return saldo_bancario, valor_sacado, valor_depositado
 
 
 while True:
@@ -112,13 +101,13 @@ while True:
 
     if opcao == "1":
         print("Depositar")
-        depositar()
+        saldo_bancario, valor_depositado = depositar(saldo_bancario, valor_depositado)
     elif opcao == "2":
         print("Sacar")
-        sacar()
+        saldo_bancario, valor_sacado, quantidade_de_saques = sacar(saldo_bancario, valor_sacado, quantidade_de_saques)
     elif opcao == "3":
         print("Extrato")
-        extrato(valor_sacado, valor_depositado)
+        saldo_bancario, valor_sacado, valor_depositado = extrato(saldo_bancario, valor_sacado, valor_depositado)
     elif opcao == "0":
         print("Saindo...")
         break
